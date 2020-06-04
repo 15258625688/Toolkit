@@ -8,11 +8,7 @@ public class Address {
 
 	private int port;
 
-	public int getIp() {
-		return ip;
-	}
-
-	public String getIpToString() {
+	public String getIp() {
 		return intToIP(ip);
 	}
 

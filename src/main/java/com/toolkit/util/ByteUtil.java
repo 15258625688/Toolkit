@@ -17,6 +17,11 @@ public class ByteUtil {
 		return sb.toString();
 	}
 
+	public static String byteToHexString(byte b) {
+		final char[] cs = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+		return cs[b >> 4 & 0xf] + "" + cs[b & 0xf];
+	}
+
 	/**
 	 * 十六进制转字节码
 	 * 
@@ -54,5 +59,32 @@ public class ByteUtil {
 			sb.append(ascii);
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * 根据数据信息长度计算L.TH
+	 * 
+	 * @param length
+	 * @return
+	 */
+	public static byte[] getL_TH(int length) {
+		int lchkSum = 16 - (((length & 0xf) + (length >> 4) & 0xf + (length >> 8) & 0xf)) % 16;
+		int l_th = length | (lchkSum << 12);
+		return new byte[] { (byte) ((l_th & 0xff00) >> 8), (byte) (l_th & 0xff) };
+	}
+
+	/**
+	 * 根据byte[]计算CHECKSUM
+	 * 
+	 * @param bs
+	 * @return
+	 */
+	public static short getCheckSum(byte[] bs) {
+		if (bs.length == 0)
+			return 0;
+		byte b = 0;
+		for (byte b1 : bs)
+			b += b1;
+		return (short) (~(b % 65536) + 1);
 	}
 }

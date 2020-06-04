@@ -9,6 +9,7 @@ public class SystemUtil {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings({ "resource", "unused" })
 	public static String getSerial() {
 		try {
 			Process process = Runtime.getRuntime().exec("C:\\Windows\\System32\\wbem\\wmic cpu get ProcessorId");
