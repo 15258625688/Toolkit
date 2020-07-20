@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import com.toolkit.entity.VerificationCode;
 
 /**
@@ -32,8 +33,20 @@ public class VerificationCodeUtil {
 
     private final static Color[] COLORS = new Color[] { Color.BLUE, Color.RED, Color.GREEN, Color.BLACK };
 
+    private static Font font;
+    static {
+	try {
+	    font = Font.createFont(Font.TRUETYPE_FONT,
+		    VerificationCodeUtil.class.getClassLoader().getResourceAsStream("fonts/f3.ttf"));
+	    font = font.deriveFont(Font.BOLD, 25);
+	} catch (Exception e) {
+	    font = new Font("Algerian", Font.BOLD, 25);
+	}
+    }
+
     /**
      * 验证码位数
+     * 
      */
     private final static int CODE_LENTH = 4;
 
@@ -49,13 +62,20 @@ public class VerificationCodeUtil {
 	Random random = new Random();
 	BufferedImage image = createBufferedImage(20 * CODE_LENTH, 30);
 	Graphics2D g = image.createGraphics();
-	Font font = new Font("Algerian", Font.BOLD, 25);
 	for (int n = 0; n < CODE_LENTH; n++) {
 	    g.setColor(COLORS[random.nextInt(COLORS.length)]);
 	    char c = CS[random.nextInt(CS.length)];
 	    AffineTransform t = font.getTransform();
-	    // 字体旋转角度为-50到50之间
-	    t.rotate(Math.toRadians(50 - random.nextInt(100)));
+	    if (n == 0) {
+		// 第一位
+		t.rotate(Math.toRadians(random.nextInt(50)));
+	    } else if (n == CODE_LENTH - 1) {
+		// 最后一位
+		t.rotate(Math.toRadians(-random.nextInt(50)));
+	    } else {
+		// 字体旋转角度为-50到50之间
+		t.rotate(Math.toRadians(50 - random.nextInt(100)));
+	    }
 	    g.setFont(font.deriveFont(t));
 	    // 每个字体宽度20
 	    g.drawString(String.valueOf(c), n * 20, 20);
@@ -65,9 +85,58 @@ public class VerificationCodeUtil {
 	ImageIO.write(image, "png", out);
 	g.dispose();
 	byte[] bs = Base64.encodeBase64(out.toByteArray());
-	String base64Img = "data:image/png;base64," + new String(bs);
+	String base64Img = Base64Util.PNG + new String(bs);
 	VerificationCode vc = new VerificationCode();
 	vc.setCode(code.toString());
+	vc.setBase64Img(base64Img);
+	return vc;
+    }
+
+    public static VerificationCode newVerificationCode_Gif() throws IOException {
+	char[] cs = new char[CODE_LENTH];
+	Random random = new Random();
+	for (int n = 0; n < CODE_LENTH; n++)
+	    cs[n] = CS[random.nextInt(CS.length)];
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	AnimatedGifEncoder e = new AnimatedGifEncoder();
+	// 对应颜色改为透明
+	e.setTransparent(Color.WHITE);
+	// 背景改为透明
+	e.setBackground(new Color(0, 0xff, 0xff, 0xff));
+	e.setRepeat(0);
+	e.start(out);
+	e.setDelay(1000);
+	for (int n = 0; n < 10; n++) {
+	    BufferedImage image = createBufferedImage(20 * CODE_LENTH, 30);
+	    Graphics2D g = image.createGraphics();
+	    int length = cs.length;
+	    for (int index = 0; index < length; index++) {
+		char c = cs[index];
+		g.setColor(COLORS[random.nextInt(COLORS.length)]);
+		AffineTransform t = font.getTransform();
+		// 字体旋转角度为-50到50之间
+		if (index == 0) {
+		    // 第一位
+		    t.rotate(Math.toRadians(random.nextInt(50)));
+		} else if (index == length - 1) {
+		    // 最后一位
+		    t.rotate(Math.toRadians(-random.nextInt(50)));
+		} else {
+		    // 字体旋转角度为-50到50之间
+		    t.rotate(Math.toRadians(50 - random.nextInt(100)));
+		}
+		g.setFont(font.deriveFont(t));
+		// 每个字体宽度20
+		g.drawString(String.valueOf(c), index * 20, 20);
+	    }
+	    e.addFrame(image);
+	    e.setDelay(1000);
+	}
+	e.finish();
+	byte[] bs = Base64.encodeBase64(out.toByteArray());
+	String base64Img = Base64Util.GIF + new String(bs);
+	VerificationCode vc = new VerificationCode();
+	vc.setCode(String.valueOf(cs));
 	vc.setBase64Img(base64Img);
 	return vc;
     }
