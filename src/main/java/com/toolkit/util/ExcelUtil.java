@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+//import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelUtil {
 	public static ExcelUtil.ExcelData readExcel(Workbook wb) {
@@ -48,7 +49,8 @@ public class ExcelUtil {
 		Workbook workbook = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
-			workbook = new HSSFWorkbook();
+//			workbook = new HSSFWorkbook();
+			workbook = new XSSFWorkbook();
 			Sheet sheet = workbook.createSheet();
 			int sizeColumn = 0;
 			int rownum = 0;
