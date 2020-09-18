@@ -16,7 +16,7 @@ public class PoolTest {
 	config.setMaxWaitMillis(60 * 1000);
 	objectPool = new GenericObjectPool<TestObjectPoolClass>(new TestObjectPoolFactory(), config);
 	ExecutorService exec = Executors.newFixedThreadPool(10);
-	for (int n = 0; n < 100; n++) {
+	for (int n = 0; n < 10; n++) {
 	    exec.submit(new Runnable() {
 
 		@Override
@@ -35,7 +35,8 @@ public class PoolTest {
 		}
 	    });
 	}
-	Thread.sleep(60 * 1000);
+	Thread.sleep(10 * 1000);
 	System.out.println("end");
+	exec.shutdown();
     }
 }

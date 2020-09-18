@@ -11,8 +11,6 @@ import javax.xml.rpc.encoding.XMLType;
 import org.apache.axis.client.Service;
 import org.junit.Test;
 
-import com.alibaba.fastjson.JSONObject;
-
 public class AxisTest {
 
     @Test
